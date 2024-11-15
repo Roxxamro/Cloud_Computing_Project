@@ -1,0 +1,83 @@
+name: Cloud_Computing_Project
+
+on:
+  pull_request:
+    branches: [ "main", "dev" ]
+    types: [opened, synchronize]
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  check_service:
+    # Ce job s'exécute pour chaque pull request ou push sur les branches 'main' et dev.
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' 
+    runs-on: ubuntu-latest
+    steps:
+      # Étape 1 : Télécharger le dépôt
+      - uses: actions/checkout@v3
+
+      # Étape 2 : Configurer Python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      # Étape 3 : Vérifier que UV fonctionne correctement
+      - run: uv --version
+
+      # Étape 5 : Synchroniser les dépendances
+      - name: Install dependencies
+        run: uv sync
+
+      # Étape 6 : Construire le projet
+      - name: Build Project
+        run: uv build
+
+      # Étape 7 : Exécuter les tests unitaires
+      - name: Running unit tests
+        run: uv run pytest tests/
+
+  build_docker_image:
+    # Ce job s'exécute uniquement sur un push dans la branche 'main'.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      # Étape 1 : Télécharger le dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Étape 2 : Se connecter au registre GitHub Container Registry
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Étape 3 : Extraire les métadonnées pour les tags et labels Docker
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha
+            type=raw,value=latest
+
+      # Étape 4 : Construire et publier l'image Docker
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
