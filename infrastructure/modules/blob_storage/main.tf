@@ -1,6 +1,6 @@
 # Création d'une chaîne aléatoire pour générer un nom unique
 resource "random_string" "my_random_storage_name" {
-  length  = 24
+  length  = 9
   special = false
   upper   = false  
 }
