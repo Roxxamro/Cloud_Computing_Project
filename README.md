@@ -1,46 +1,49 @@
-# Examples API
 
-Simple API that returns example records from a database.
+Projet : Cloud Computing
+API developpee par Fabien HUITELEC et infrastructure declarative (Microsoft Azure) en utilisant Terraform HCL.
 
-## Prerequisites
+Description du projet
+Ce projet consiste a provisionner une infrastructure cloud sur Microsoft Azure et a deployer une API Python developpee avec le framework FastAPI. Le tout inclut une chaîne CI/CD configuree avec GitHub Actions pour automatiser les tests, la construction et le deploiement.
 
-- you need to install [uv](https://docs.astral.sh/uv/guides/install-python/)
-- you must have a PostgreSQL instance available with an `example` table
+equipe de travail
+Le projet a ete developpe par quatre contributeurs :
 
-## Installation
+Simon Demeilliers
+Remi Protin
+Quentin Ambroziewicz
+Titoine Farthouat
 
-```shell
-# Install Python in the right version
-uv python install
+Technologies utilisees
+Terraform v1.5.7 par HashiCorp
+Python v3.12 ou plus recent
+FastAPI v0.115.0 ou plus recent
+Structure du projet
+Le depôt est organise de la manière suivante :
 
-# Install dependencies and create virtual env
-uv sync
-```
+.github : contient les workflows CI/CD.
+examples : contient l'API Python ecrite avec le framework FastAPI.
+infrastructure : regroupe les declarations d'infrastructure cloud.
+Installation
 
-## Run
+Dans le dossier ./infrastructure, vous trouverez un fichier nomme terraform.tfvars.sample.
 
-```shell
-# Export environment variables to connect to the PostgreSQL database...
-export DATABASE_HOST=
-export DATABASE_PORT=
-export DATABASE_NAME=
-export DATABASE_USER=
-export DATABASE_PASSWORD='' # Use single quotes to avoid shell interpolation with characters like $ or #
-# ...and the storage account
-export STORAGE_ACCOUNT_URL=
+Copiez ce fichier et renommez-le en supprimant l'extension .sample.
+Ajoutez les informations suivantes :
+Votre ID de souscription Azure.
+Un login et un mot de passe pour l’administrateur de la base PostgreSQL Flexible Server.
+Assurez-vous que le mot de passe respecte les critères de securite d’Azure.
+Toujours dans le dossier ./infrastructure, executez les commandes suivantes dans cet ordre :
 
-# Run the application
-uv run fastapi dev examples/examples.py
-```
+terraform init
+terraform plan
+terraform apply
+Ces commandes provisionneront votre infrastructure cloud.
 
-## Run tests
+Motivation et architecture
+L’objectif principal de ce projet est d’appliquer les concepts etudies durant le cours de cloud computing a Junia ISEN. Cela inclut :
 
-```
-uv run pytest tests/
-```
+La conception d'une architecture cloud sur Microsoft Azure.
+Le deploiement d'une API simple, accompagnee d'une base de donnees PostgreSQL et d’un stockage de fichiers.
+Ce projet illustre la mise en œuvre concrète des technologies cloud modernes pour repondre a des exigences techniques basiques.
 
-They go on:
 
-- http://localhost:8000/docs
-- http://localhost:8000/
-- http://localhost:8000/examples

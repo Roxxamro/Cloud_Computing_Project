@@ -1,0 +1,3 @@
+subscription_id         = ""                        # ID de la souscription Azure. Utilisez la commande 'az login' pour vous connecter.
+resource_group_name     = "Cloud-Computing-Project" # Nom du groupe de ressources (par défaut : Cloud-Project)
+resource_group_location = "France Central"          # Emplacement du groupe de ressources (par défaut : France Central)
