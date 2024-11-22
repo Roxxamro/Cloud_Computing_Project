@@ -25,14 +25,9 @@ examples : contient l'API Python ecrite avec le framework FastAPI.
 infrastructure : regroupe les declarations d'infrastructure cloud.
 Installation
 
-Dans le dossier ./infrastructure, vous trouverez un fichier nomme terraform.tfvars.sample.
+Dans le dossier ./infrastructure, executez les commandes suivantes dans cet ordre :
 
-Copiez ce fichier et renommez-le en supprimant l'extension .sample.
-Ajoutez les informations suivantes :
-Votre ID de souscription Azure.
-Un login et un mot de passe pour l’administrateur de la base PostgreSQL Flexible Server.
-Assurez-vous que le mot de passe respecte les critères de securite d’Azure.
-Toujours dans le dossier ./infrastructure, executez les commandes suivantes dans cet ordre :
+Avant de faire les commandes terraform, il faut se connecter avex az login
 
 terraform init
 terraform plan
