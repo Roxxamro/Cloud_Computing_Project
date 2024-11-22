@@ -11,7 +11,6 @@ resource "azurerm_linux_web_app" "app_service" {
   resource_group_name           = var.resource_group_name
   location                      = var.physical_location
   service_plan_id               = azurerm_service_plan.api_plan.id
-   public_network_access_enabled = true
   virtual_network_subnet_id     = var.my_subnet_id
 
   site_config {
@@ -35,5 +34,19 @@ resource "azurerm_linux_web_app" "app_service" {
 
   identity {
     type = "SystemAssigned"
+  }
+}
+# Ajout du Private Endpoint pour l'App Service
+resource "azurerm_private_endpoint" "app_service_private_endpoint" {
+  name                = "app_service_name-pe"
+  location            = var.physical_location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.my_subnet_id
+
+  private_service_connection {
+    name                           = "appservice-connection"
+    private_connection_resource_id = azurerm_linux_web_app.app_service.id
+    subresource_names              = ["sites"]
+    is_manual_connection           = false
   }
 }
