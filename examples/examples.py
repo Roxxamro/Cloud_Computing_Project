@@ -8,9 +8,7 @@ from azure.core.exceptions import HttpResponseError
 
 from fastapi import FastAPI, HTTPException
 
-
 app = FastAPI()
-
 
 @app.get("/")
 def read_root():
@@ -52,7 +50,6 @@ def read_quotes():
         account_url = get_environment_variable("STORAGE_ACCOUNT_URL")
         default_credential = DefaultAzureCredential(process_timeout=2)
         blob_service_client = BlobServiceClient(account_url, credential=default_credential)
-
         container_client = blob_service_client.get_container_client(container="api")
         quotes = json.loads(container_client.download_blob("quotes.json").readall())
     except HttpResponseError as error:
