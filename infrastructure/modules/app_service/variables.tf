@@ -68,3 +68,7 @@ variable "storage_url" {
   description = "The blob storage URL"
   type        = string
 }
+variable "storage_account_id" {
+  description = "L'ID du compte de stockage"
+  type        = string
+}

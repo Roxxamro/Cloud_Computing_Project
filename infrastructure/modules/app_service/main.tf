@@ -49,4 +49,9 @@ resource "azurerm_private_endpoint" "app_service_private_endpoint" {
     subresource_names              = ["sites"]
     is_manual_connection           = false
   }
+  }
+resource "azurerm_role_assignment" "app_service_storage_access" {
+  principal_id         = azurerm_linux_web_app.app_service.identity[0].principal_id
+  role_definition_name = "Storage Blob Data Reader"
+  scope                = var.storage_account_id
 }
