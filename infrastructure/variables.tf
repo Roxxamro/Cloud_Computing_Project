@@ -123,3 +123,7 @@ variable "my_subnet_id" {
   description = "L'ID du sous-réseau du réseau virtuel auquel la zone DNS sera liée."
   type        = string
 }
+variable "storage_account_id" {
+  description = "L'ID du compte de stockage"
+  type        = string
+}

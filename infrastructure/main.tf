@@ -65,4 +65,5 @@ module "app_service" {
 
   # Blob storage environment variables
   storage_url        = module.blob_storage.storage_url
+  storage_account_id = var.storage_account_id
 }
