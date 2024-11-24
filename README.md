@@ -27,7 +27,7 @@ Installation
 
 Dans le dossier ./infrastructure, executez les commandes suivantes dans cet ordre :
 
-Avant de faire les commandes terraform, il faut se connecter avex az login
+Avant de faire les commandes terraform, il faut se connecter avex az login et remplir les informations manquantes dans le fichier terraform.tfvars.sample
 
 terraform init
 terraform plan
