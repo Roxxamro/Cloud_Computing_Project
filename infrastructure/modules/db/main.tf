@@ -30,7 +30,7 @@ resource "azurerm_postgresql_flexible_server" "my_postgresql_server" {
   zone                          = "1"  # La zone DNS associée
   storage_mb   = 32768  # Taille du stockage en Mo
   storage_tier = "P30"  # Niveau de stockage pour la base de données
-  sku_name = "GP_Standard_D4s_v3"  # Type de SKU pour la machine virtuelle
+  sku_name = "B_Standard_B2s"  # Type de SKU pour la machine virtuelle
   # Dépendance explicite pour s'assurer que le lien DNS est créé avant le serveur PostgreSQL
   depends_on = [azurerm_private_dns_zone_virtual_network_link.my_dns_zone_link]
 }
@@ -38,5 +38,40 @@ resource "azurerm_postgresql_flexible_server" "my_postgresql_server" {
 resource "azurerm_postgresql_flexible_server_database" "my_db" {
   name      = var.postgresql_db_name
   server_id = azurerm_postgresql_flexible_server.my_postgresql_server.id
+}
+
+#Crédits : Xavier Leduc
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_vnet" {
+  name                = "allow-vnet"
+  start_ip_address    = "10.0.0.0"
+  end_ip_address      = "10.255.255.255"
+  server_id           = azurerm_postgresql_flexible_server.my_postgresql_server.id
+}
+
+resource "null_resource" "initialize_database" {
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "Waiting for DNS and network propagation..."
+      sleep 120
+      echo "Testing DNS resolution..."
+      nslookup ${azurerm_postgresql_flexible_server.my_postgresql_server.fqdn} || exit 1
+      nc -zv ${azurerm_postgresql_flexible_server.my_postgresql_server.fqdn} 5432 || exit 1
+      PGPASSWORD=${var.administrator_password} psql \
+      --host=${azurerm_postgresql_flexible_server.my_postgresql_server.fqdn} \
+      --port=5432 \
+      --username=${var.administrator_login}@${azurerm_postgresql_flexible_server.my_postgresql_server.name} \
+      --dbname=${azurerm_postgresql_flexible_server_database.my_db.name} \
+      -f ${path.module}/script.sql
+
+    EOT
+    environment = {
+      PGPASSWORD = var.administrator_password
+    }
+  }
+  depends_on = [
+  azurerm_postgresql_flexible_server_database.my_db,
+  azurerm_private_dns_zone_virtual_network_link.my_dns_zone_link
+]
 }
 
