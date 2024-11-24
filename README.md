@@ -5,13 +5,13 @@ API developpee par Fabien HUITELEC et infrastructure declarative (Microsoft Azur
 Description du projet
 Ce projet consiste a provisionner une infrastructure cloud sur Microsoft Azure et a deployer une API Python developpee avec le framework FastAPI. Le tout inclut une chaîne CI/CD configuree avec GitHub Actions pour automatiser les tests, la construction et le deploiement.
 
-equipe de travail
+équipe de travail
 Le projet a ete developpe par quatre contributeurs :
 
-Simon Demeilliers
-Remi Protin
-Quentin Ambroziewicz
-Titoine Farthouat
+Simon Demeilliers,
+Remi Protin,
+Quentin Ambroziewicz,
+Titoine Farthouat.
 
 Technologies utilisees
 Terraform v1.5.7 par HashiCorp
@@ -29,8 +29,8 @@ Dans le dossier ./infrastructure, executez les commandes suivantes dans cet ordr
 
 Avant de faire les commandes terraform, il faut se connecter avex az login et remplir les informations manquantes dans le fichier terraform.tfvars.sample
 
-terraform init
-terraform plan
+terraform init,
+terraform plan,
 terraform apply
 Ces commandes provisionneront votre infrastructure cloud.
 
