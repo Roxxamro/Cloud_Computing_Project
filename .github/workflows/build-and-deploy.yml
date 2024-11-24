@@ -81,3 +81,56 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  # crédit : Louis SKRZYPCZAK pour la partie ci-dessous
+  deploy_application:
+    name: Deploy application with Terraform
+    needs: build_docker_image
+    runs-on: ubuntu-latest
+    steps:
+              - name: Checkout repository
+                uses: actions/checkout@v3
+        
+              - name: Login to Azure
+                uses: azure/login@v1
+                with: 
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+              - name: Validate Azure Credentials
+                run: |
+                  echo "Checking AZURE_CREDENTIALS"
+                  echo "Extracted AZURE_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')"
+                  echo "Extracted AZURE_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.subscriptionId')"
+                  echo "Extracted AZURE_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.tenantId')"
+        
+              - name: Assign necessary permissions
+                run: |
+                  az role assignment create \
+                    --assignee $(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId') \
+                    --role "Owner" \
+                    --scope /subscriptions/$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.subscriptionId')
+        
+              - name: Setup Terraform
+                uses: hashicorp/setup-terraform@v2
+                with:
+                  terraform_version: 1.9.8
+        
+              - name: Convert image name to lowercase
+                run: echo "DOCKER_IMAGE=${{ env.REGISTRY }}/$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]'):latest" >> $GITHUB_ENV
+        
+              - name: Initialize Terraform
+                working-directory: ./infrastructure
+                run: terraform init
+        
+              - name: Validate Terraform configuration
+                working-directory: ./infrastructure
+                run: terraform validate
+        
+              - name: Plan Terraform changes
+                working-directory: ./infrastructure
+                run: terraform plan -var "docker_image=$DOCKER_IMAGE"
+        
+              - name: Apply Terraform changes
+                working-directory: ./infrastructure
+                run: terraform apply -auto-approve -var "docker_image=$DOCKER_IMAGE"
+        
