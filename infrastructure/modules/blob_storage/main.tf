@@ -20,8 +20,10 @@ resource "azurerm_storage_container" "storage_container" {
 }
 # Création d'un blob dans le conteneur de stockage
 resource "azurerm_storage_blob" "blob_storage" {
-  name                   = "my-awesome-content${random_string.my_random_storage_name.result}.zip"  # Nom unique pour le blob avec la chaîne aléatoire
+  name                   = "quotes.json"
   storage_account_name   = azurerm_storage_account.storage_account.name  # Fait référence au compte de stockage
   storage_container_name = azurerm_storage_container.storage_container.name  # Fait référence au conteneur de stockage
   type                   = "Block"  # Type de blob : Block Blob (utilisé pour stocker des fichiers volumineux)
+  source                 = "${path.module}/quotes.json"  # Fichier source pour le blob
+
 }
